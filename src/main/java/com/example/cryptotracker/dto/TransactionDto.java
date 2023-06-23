@@ -5,6 +5,7 @@ import com.example.cryptotracker.enums.CurrencyType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ public class TransactionDto implements Serializable {
     private AssetType assetType;
     @NotNull
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private  LocalDate buyDate;
+    private LocalDate buyDate;
     @NotNull
     @Positive
     private BigDecimal currencyInvested;
@@ -24,8 +25,9 @@ public class TransactionDto implements Serializable {
     private CurrencyType currencyType;
     private BigDecimal amountOfAsset;
     private BigDecimal assetBuyingPrice;
-    private BigDecimal exchangeRateOfUsd;
-    private BigDecimal exchangeRateOfEur;
+    private BigDecimal currencyInvestedExchangeRateToUsd;
+    private BigDecimal exchangeRateUsdToBgn;
+    private BigDecimal exchangeRateEurToBgn;
 
     public void setId(Long id) {
         this.id = id;
@@ -83,20 +85,28 @@ public class TransactionDto implements Serializable {
         this.assetBuyingPrice = assetBuyingPrice;
     }
 
-    public BigDecimal getExchangeRateOfUsd() {
-        return exchangeRateOfUsd;
+    public BigDecimal getExchangeRateUsdToBgn() {
+        return exchangeRateUsdToBgn;
     }
 
-    public void setExchangeRateOfUsd(BigDecimal exchangeRateOfUsd) {
-        this.exchangeRateOfUsd = exchangeRateOfUsd;
+    public void setExchangeRateUsdToBgn(BigDecimal exchangeRateUsdToBgn) {
+        this.exchangeRateUsdToBgn = exchangeRateUsdToBgn;
     }
 
-    public BigDecimal getExchangeRateOfEur() {
-        return exchangeRateOfEur;
+    public BigDecimal getExchangeRateEurToBgn() {
+        return exchangeRateEurToBgn;
     }
 
-    public void setExchangeRateOfEur(BigDecimal exchangeRateOfEur) {
-        this.exchangeRateOfEur = exchangeRateOfEur;
+    public void setExchangeRateEurToBgn(BigDecimal exchangeRateEurToBgn) {
+        this.exchangeRateEurToBgn = exchangeRateEurToBgn;
+    }
+
+    public BigDecimal getCurrencyInvestedExchangeRateToUsd() {
+        return currencyInvestedExchangeRateToUsd;
+    }
+
+    public void setCurrencyInvestedExchangeRateToUsd(BigDecimal currencyInvestedExchangeRateToUsd) {
+        this.currencyInvestedExchangeRateToUsd = currencyInvestedExchangeRateToUsd;
     }
 
     @Override
@@ -123,4 +133,5 @@ public class TransactionDto implements Serializable {
                 "buyDate = " + buyDate + ", " +
                 "currencyInvested = " + currencyInvested + ")";
     }
+
 }

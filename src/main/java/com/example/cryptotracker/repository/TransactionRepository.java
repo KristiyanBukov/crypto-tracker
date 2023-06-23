@@ -1,7 +1,7 @@
 package com.example.cryptotracker.repository;
 
-import com.example.cryptotracker.enums.AssetType;
 import com.example.cryptotracker.enitity.Transaction;
+import com.example.cryptotracker.enums.AssetType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -14,7 +14,6 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
     private Double athChangePercentage;
     @JsonProperty("ath_date")
     private String athDate;
-
     private Double atl;
     @JsonProperty("atl_change_percentage")
     private Double atlChangePercentage;
@@ -28,9 +27,7 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
     private Long fullyDilutedValuation;
     @JsonProperty("high_24h")
     private Long high24H;
-
     private String id;
-
     private String image;
     @JsonProperty("last_updated")
     private String lastUpdated;
@@ -46,15 +43,12 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
     private Long marketCapRank;
     @JsonProperty("max_supply")
     private Double maxSupply;
-
     private String name;
     @JsonProperty("price_change_24h")
     private Double priceChange24H;
     @JsonProperty("price_change_percentage_24h")
     private Double priceChangePercentage24H;
-
     private Object roi;
-
     private String symbol;
     @JsonProperty("total_supply")
     private Double totalSupply;
@@ -63,7 +57,7 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
 
     @Override
     public BigDecimal getPrice() {
-       return this.currentPrice;
+        return this.currentPrice;
     }
 
     public Long getAth() {

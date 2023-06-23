@@ -4,7 +4,6 @@ import com.example.cryptotracker.enums.AssetType;
 import com.example.cryptotracker.enums.CurrencyType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Entity
@@ -16,16 +15,20 @@ public class Transaction {
     @Enumerated(EnumType.STRING) // Storing enums like strings in database and retrieving them like enums
     private AssetType assetType;
     private LocalDate buyDate;
-    @Column( scale = 2, precision = 11)
+    @Column(scale = 2, precision = 11)
     private BigDecimal currencyInvested;
     @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
-    @Column( scale = 8, precision = 11)
+    @Column(scale = 8, precision = 11)
     private BigDecimal amountOfAsset;
-    @Column( scale = 2, precision = 11)
+    @Column(scale = 2, precision = 11)
     private BigDecimal assetBuyingPrice;
-    private Double exchangeRateOfUsd;
-    private Double exchangeRateOfEur;
+    @Column(scale = 5, precision = 11)
+    private BigDecimal currencyInvestedExchangeRateToUsd;
+    @Column(scale = 5, precision = 11)
+    private BigDecimal exchangeRateUsdToBgn;
+    @Column(scale = 5, precision = 11)
+    private BigDecimal exchangeRateEurToBgn;
 
     public AssetType getAssetType() {
         return assetType;
@@ -83,19 +86,27 @@ public class Transaction {
         this.assetBuyingPrice = assetBuyingPrice;
     }
 
-    public Double getExchangeRateOfUsd() {
-        return exchangeRateOfUsd;
+    public BigDecimal getExchangeRateUsdToBgn() {
+        return exchangeRateUsdToBgn;
     }
 
-    public void setExchangeRateOfUsd(Double exchangeRateOfUsd) {
-        this.exchangeRateOfUsd = exchangeRateOfUsd;
+    public void setExchangeRateUsdToBgn(BigDecimal exchangeRateUsdToBgn) {
+        this.exchangeRateUsdToBgn = exchangeRateUsdToBgn;
     }
 
-    public Double getExchangeRateOfEur() {
-        return exchangeRateOfEur;
+    public BigDecimal getExchangeRateEurToBgn() {
+        return exchangeRateEurToBgn;
     }
 
-    public void setExchangeRateOfEur(Double exchangeRateOfEur) {
-        this.exchangeRateOfEur = exchangeRateOfEur;
+    public void setExchangeRateEurToBgn(BigDecimal exchangeRateEurToBgn) {
+        this.exchangeRateEurToBgn = exchangeRateEurToBgn;
+    }
+
+    public BigDecimal getCurrencyInvestedExchangeRateToUsd() {
+        return currencyInvestedExchangeRateToUsd;
+    }
+
+    public void setCurrencyInvestedExchangeRateToUsd(BigDecimal currencyInvestedExchangeRateToUsd) {
+        this.currencyInvestedExchangeRateToUsd = currencyInvestedExchangeRateToUsd;
     }
 }

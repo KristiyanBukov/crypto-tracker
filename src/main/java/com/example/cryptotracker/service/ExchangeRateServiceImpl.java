@@ -12,8 +12,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class ExchangeRateServiceImpl implements ExchangeRateService {
@@ -26,25 +24,40 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     }
 
     @Override
-    public void getHistoricalRatesData(TransactionDto transactionDto) {
+    public void getHistoricalRatesUsdEurToBgn(TransactionDto transactionDto) {
 
         ResponseEntity<ExchangeRateResponse> exchangeRateUsd = restTemplate.getForEntity(buildUrl(transactionDto.getBuyDate(),
-                CurrencyType.USD), ExchangeRateResponse.class);
+                CurrencyType.USD, CurrencyType.BGN), ExchangeRateResponse.class);
 
         ResponseEntity<ExchangeRateResponse> exchangeRateEur = restTemplate.getForEntity(buildUrl(transactionDto.getBuyDate(),
-                CurrencyType.EUR), ExchangeRateResponse.class);
+                CurrencyType.EUR, CurrencyType.BGN), ExchangeRateResponse.class);
 
-        transactionDto.setExchangeRateOfUsd(exchangeRateUsd.getBody().getRates().get(CurrencyType.BGN.getCode()));
-        transactionDto.setExchangeRateOfEur(exchangeRateEur.getBody().getRates().get(CurrencyType.BGN.getCode()));
+        transactionDto.setExchangeRateUsdToBgn(exchangeRateUsd.getBody().getRates().get(CurrencyType.BGN.getCode()));
+        transactionDto.setExchangeRateEurToBgn(exchangeRateEur.getBody().getRates().get(CurrencyType.BGN.getCode()));
 
         if (CollectionUtils.isEmpty(exchangeRateUsd.getBody().getRates()) ||
                 CollectionUtils.isEmpty(exchangeRateEur.getBody().getRates())) {
-            throw new IllegalStateException("Failed to retrieve historical rates data");
+            throw new IllegalStateException("Failed to retrieve historical rates data for Bgn");
         }
-
     }
 
-    private String buildUrl(LocalDate localDate, CurrencyType currencyType) {
-        return String.format("https://api.exchangerate.host/%s?base=%s&symbols=%s", localDate, currencyType, CurrencyType.BGN);
+    @Override
+    public void getHistoricalExchangeRates(TransactionDto transactionDto) {
+
+        ResponseEntity<ExchangeRateResponse> exchangeRateResponse = restTemplate.getForEntity(buildUrl(transactionDto.getBuyDate(),
+                transactionDto.getCurrencyType(), CurrencyType.USD), ExchangeRateResponse.class);
+
+        BigDecimal exchangeRate = exchangeRateResponse.getBody().getRates().get(CurrencyType.USD.getCode());
+        transactionDto.setCurrencyInvestedExchangeRateToUsd(exchangeRate);
+        transactionDto.setCurrencyInvested(transactionDto.getCurrencyInvested().multiply(exchangeRate));
+        System.out.println(exchangeRate);
+        if (CollectionUtils.isEmpty(exchangeRateResponse.getBody().getRates())) {
+            throw new IllegalStateException("Failed to retrieve historical exchange rates");
+        }
     }
+
+    private String buildUrl(LocalDate localDate, CurrencyType currencyTypeBase, CurrencyType currencyTypeSymbols) {
+        return String.format("https://api.exchangerate.host/%s?base=%s&symbols=%s", localDate, currencyTypeBase, currencyTypeSymbols);
+    }
+
 }

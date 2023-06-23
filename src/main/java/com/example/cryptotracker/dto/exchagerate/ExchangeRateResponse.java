@@ -9,13 +9,9 @@ import java.util.Map;
 public class ExchangeRateResponse {
 
     private String base;
-
     private String date;
-
     private Boolean historical;
-
     private Map<String, BigDecimal> rates;
-
     private Boolean success;
 
     public String getBase() {

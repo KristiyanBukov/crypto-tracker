@@ -3,6 +3,7 @@ package com.example.cryptotracker.service;
 import com.example.cryptotracker.dto.TransactionDto;
 import com.example.cryptotracker.dto.coingecko.history.CoinGeckoHistoryItem;
 import com.example.cryptotracker.dto.coingecko.market.CoinGeckoMarketsItem;
+import com.example.cryptotracker.enums.AssetType;
 import com.example.cryptotracker.enums.CurrencyType;
 import com.example.cryptotracker.exception.IllegalStateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,10 @@ public class CoinGeckoServiceImpl implements CoinGeckoService {
     }
 
     @Override
-    public CoinGeckoMarketsItem getMarketsData(TransactionDto transactionDto) {
+    public CoinGeckoMarketsItem getMarketsData(AssetType assetType) {
 
         String url = String.format("https://api.coingecko.com/api/v3/coins/markets?vs_currency=%s&ids=%s"
-                , CurrencyType.USD, transactionDto.getAssetType().getName());
+                , CurrencyType.USD, assetType.getName());
 
         ParameterizedTypeReference<List<CoinGeckoMarketsItem>> responseType = new ParameterizedTypeReference<>() {
         };

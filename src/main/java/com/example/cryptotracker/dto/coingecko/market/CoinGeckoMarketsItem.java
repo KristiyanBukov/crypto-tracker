@@ -36,7 +36,7 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
     @JsonProperty("market_cap")
     private Long marketCap;
     @JsonProperty("market_cap_change_24h")
-    private Long marketCapChange24H;
+    private BigDecimal marketCapChange24H;
     @JsonProperty("market_cap_change_percentage_24h")
     private Double marketCapChangePercentage24H;
     @JsonProperty("market_cap_rank")
@@ -45,7 +45,7 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
     private Double maxSupply;
     private String name;
     @JsonProperty("price_change_24h")
-    private Double priceChange24H;
+    private BigDecimal priceChange24H;
     @JsonProperty("price_change_percentage_24h")
     private Double priceChangePercentage24H;
     private Object roi;
@@ -180,11 +180,11 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
         this.marketCap = marketCap;
     }
 
-    public Long getMarketCapChange24H() {
+    public BigDecimal getMarketCapChange24H() {
         return marketCapChange24H;
     }
 
-    public void setMarketCapChange24H(Long marketCapChange24H) {
+    public void setMarketCapChange24H(BigDecimal marketCapChange24H) {
         this.marketCapChange24H = marketCapChange24H;
     }
 
@@ -220,11 +220,11 @@ public class CoinGeckoMarketsItem implements CoinGeckoPrice {
         this.name = name;
     }
 
-    public Double getPriceChange24H() {
+    public BigDecimal getPriceChange24H() {
         return priceChange24H;
     }
 
-    public void setPriceChange24H(Double priceChange24H) {
+    public void setPriceChange24H(BigDecimal priceChange24H) {
         this.priceChange24H = priceChange24H;
     }
 

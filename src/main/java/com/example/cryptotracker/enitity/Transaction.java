@@ -19,9 +19,9 @@ public class Transaction {
     private BigDecimal currencyInvested;
     @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
-    @Column(scale = 8, precision = 11)
+    @Column(scale = 8, precision = 20)
     private BigDecimal amountOfAsset;
-    @Column(scale = 2, precision = 11)
+    @Column(scale = 8, precision = 11)
     private BigDecimal assetBuyingPrice;
     @Column(scale = 5, precision = 11)
     private BigDecimal currencyInvestedExchangeRateToUsd;

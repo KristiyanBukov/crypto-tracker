@@ -19,7 +19,6 @@ import java.util.Set;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
     private final CoinGeckoService coinGeckoService;
@@ -38,9 +37,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction createTransaction(TransactionDto transactionDto) {
         validateCurrency(transactionDto.getCurrencyType());
+        System.out.println(transactionDto.getAssetType());
 
         CoinGeckoPrice coinGeckoPrice = transactionDto.getBuyDate().equals(LocalDate.now())
-                ? coinGeckoService.getMarketsData(transactionDto)
+                ? coinGeckoService.getMarketsData(transactionDto.getAssetType())
                 : coinGeckoService.getHistoryData(transactionDto);
 
         if (!transactionDto.getCurrencyType().equals(CurrencyType.USD)) {
@@ -49,13 +49,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionDto.setAssetBuyingPrice(coinGeckoPrice.getPrice());
         transactionDto.setAmountOfAsset(transactionDto.getCurrencyInvested().divide(
-                coinGeckoPrice.getPrice(), 8, RoundingMode.HALF_UP));
-
+                coinGeckoPrice.getPrice(),8, RoundingMode.HALF_UP));
 
         exchangeRateService.getHistoricalRatesUsdEurToBgn(transactionDto);
 
         return transactionRepository.save(transactionMapper.toEntity(transactionDto));
     }
+
 
     private void validateCurrency(CurrencyType currencyType) {
         if (!SUPPORTED_CURRENCIES.contains(currencyType)) {

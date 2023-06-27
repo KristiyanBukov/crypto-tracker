@@ -114,12 +114,12 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     private BigDecimal calculateRoi(BigDecimal profitLoss, BigDecimal currencyInvested) {
-        return profitLoss.divide(currencyInvested );
+        return profitLoss.divide(currencyInvested, RoundingMode.HALF_EVEN);
     }
 
     private BigDecimal calculateAverageRoi(BigDecimal roi, LocalDate buyingDate) {
         return roi.divide(BigDecimal.valueOf(
-                ChronoUnit.DAYS.between(buyingDate, LocalDate.now())).add(BigDecimal.valueOf(1)));
+                ChronoUnit.DAYS.between(buyingDate, LocalDate.now())).add(BigDecimal.valueOf(1)), RoundingMode.HALF_EVEN);
     }
 
 }

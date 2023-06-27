@@ -11,6 +11,7 @@ import com.example.cryptotracker.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +38,6 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction createTransaction(TransactionDto transactionDto) {
         validateCurrency(transactionDto.getCurrencyType());
-        System.out.println(transactionDto.getAssetType());
 
         CoinGeckoPrice coinGeckoPrice = transactionDto.getBuyDate().equals(LocalDate.now())
                 ? coinGeckoService.getMarketsData(transactionDto.getAssetType())
@@ -47,9 +47,14 @@ public class TransactionServiceImpl implements TransactionService {
             exchangeRateService.getHistoricalExchangeRates(transactionDto);
         }
 
-        transactionDto.setAssetBuyingPrice(coinGeckoPrice.getPrice());
+        if (transactionDto.getAssetBuyingPrice() == null) {
+            transactionDto.setAssetBuyingPrice(coinGeckoPrice.getPrice());
+            transactionDto.setAmountOfAsset(transactionDto.getCurrencyInvested().divide(
+                    coinGeckoPrice.getPrice(),8, RoundingMode.HALF_EVEN));
+        }
+
         transactionDto.setAmountOfAsset(transactionDto.getCurrencyInvested().divide(
-                coinGeckoPrice.getPrice(),8, RoundingMode.HALF_UP));
+                transactionDto.getAssetBuyingPrice(),8, RoundingMode.HALF_EVEN));
 
         exchangeRateService.getHistoricalRatesUsdEurToBgn(transactionDto);
 

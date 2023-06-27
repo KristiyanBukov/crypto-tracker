@@ -15,13 +15,13 @@ public class Transaction {
     @Enumerated(EnumType.STRING) // Storing enums like strings in database and retrieving them like enums
     private AssetType assetType;
     private LocalDate buyDate;
-    @Column(scale = 2, precision = 11)
+    @Column(scale = 2, precision = 17)
     private BigDecimal currencyInvested;
     @Enumerated(EnumType.STRING)
     private CurrencyType currencyType;
     @Column(scale = 8, precision = 20)
     private BigDecimal amountOfAsset;
-    @Column(scale = 8, precision = 11)
+    @Column(scale = 8, precision = 20)
     private BigDecimal assetBuyingPrice;
     @Column(scale = 5, precision = 11)
     private BigDecimal currencyInvestedExchangeRateToUsd;

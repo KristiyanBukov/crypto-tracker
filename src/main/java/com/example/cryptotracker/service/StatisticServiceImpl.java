@@ -33,8 +33,8 @@ public class StatisticServiceImpl implements StatisticService {
         List<Transaction> transactions = transactionRepository.findAll();
 
         Set<AssetType> uniqueAssetTypes = new HashSet<>();
-        for (Transaction tran : transactions) {
-            uniqueAssetTypes.add(tran.getAssetType());
+        for (Transaction transaction : transactions) {
+            uniqueAssetTypes.add(transaction.getAssetType());
         }
 
         Map<AssetType, CoinGeckoMarketsItem> apiResponse = new HashMap<>();
@@ -43,67 +43,61 @@ public class StatisticServiceImpl implements StatisticService {
             apiResponse.put(assetType, coinGeckoService.getMarketsData(assetType));
         }
 
-        List<TransactionStatisticDto> transactionStatistic = new ArrayList<>();
+        List<TransactionStatisticDto> transactionStatisticDtos = new ArrayList<>();
 
         for (Transaction transaction : transactions) {
-            TransactionStatisticDto newTransactionDto = new TransactionStatisticDto();
+            TransactionStatisticDto transactionDto = new TransactionStatisticDto();
             CoinGeckoMarketsItem coinGeckoMarketsItem = apiResponse.get(transaction.getAssetType());
 
-            newTransactionDto.setId(transaction.getId());
-            newTransactionDto.setAssetType(transaction.getAssetType());
-            newTransactionDto.setBuyDate(transaction.getBuyDate());
-            newTransactionDto.setCurrencyInvested(transaction.getCurrencyInvested());
-            newTransactionDto.setAmountOfAsset(transaction.getAmountOfAsset());
-            newTransactionDto.setAssetBuyingPrice(transaction.getAssetBuyingPrice());
-            newTransactionDto.setCurrentValue(calculateCurrentValue(newTransactionDto.getAmountOfAsset(),
-                    coinGeckoMarketsItem.getCurrentPrice()));
-            newTransactionDto.setPriceChange24h(coinGeckoMarketsItem.getPriceChange24H());
-            newTransactionDto.setCurrentPriceOfAsset(coinGeckoMarketsItem.getCurrentPrice());
-            newTransactionDto.setProfitLoss(calculateProfitLoss(newTransactionDto.getCurrentValue(),
-                    transaction.getCurrencyInvested()));
-            newTransactionDto.setRoi(calculateRoi(newTransactionDto.getProfitLoss(),
-                    transaction.getCurrencyInvested()));
-            newTransactionDto.setAverageDailyRoi(calculateAverageRoi(newTransactionDto.getRoi(),
-                    transaction.getBuyDate()));
+            setValuesFromEntityToDto(coinGeckoMarketsItem, transaction, transactionDto);
 
-            transactionStatistic.add(newTransactionDto);
+            transactionStatisticDtos.add(transactionDto);
         }
 
-        return transactionStatistic;
+        return transactionStatisticDtos;
     }
 
 
     @Override
     public List<TransactionStatisticDto> getTransactionsStatisticsByAssetType(AssetType assetType) {
 
-        List<Transaction> transactionList = transactionRepository.findByAssetType(assetType);
+        List<Transaction> transactions = transactionRepository.findByAssetType(assetType);
         List<TransactionStatisticDto> transactionStatisticDtos = new ArrayList<>();
         CoinGeckoMarketsItem coinGeckoMarketResponse = coinGeckoService.getMarketsData(assetType);
 
 
-        for (Transaction transaction : transactionList) {
-            TransactionStatisticDto transactionStatisticDto = new TransactionStatisticDto();
-            transactionStatisticDto.setId(transaction.getId());
-            transactionStatisticDto.setAssetType(transaction.getAssetType());
-            transactionStatisticDto.setBuyDate(transaction.getBuyDate());
-            transactionStatisticDto.setCurrencyInvested(transaction.getCurrencyInvested());
-            transactionStatisticDto.setAmountOfAsset(transaction.getAmountOfAsset());
-            transactionStatisticDto.setAssetBuyingPrice(transaction.getAssetBuyingPrice());
-            transactionStatisticDto.setCurrentValue(calculateCurrentValue(transactionStatisticDto.getAmountOfAsset(),
-                    coinGeckoMarketResponse.getCurrentPrice()));
-            transactionStatisticDto.setPriceChange24h(coinGeckoMarketResponse.getPriceChange24H());
-            transactionStatisticDto.setProfitLoss(calculateProfitLoss(transactionStatisticDto.getCurrentValue(),
-                    transactionStatisticDto.getCurrencyInvested()));
-            transactionStatisticDto.setCurrentPriceOfAsset(coinGeckoMarketResponse.getCurrentPrice());
-            transactionStatisticDto.setRoi(calculateRoi(transactionStatisticDto.getProfitLoss(),
-                    transactionStatisticDto.getCurrencyInvested()));
-            transactionStatisticDto.setAverageDailyRoi(calculateAverageRoi(transactionStatisticDto.getRoi(),
-                    transaction.getBuyDate()));
+        for (Transaction transaction : transactions) {
+            TransactionStatisticDto transactionDto = new TransactionStatisticDto();
 
-            transactionStatisticDtos.add(transactionStatisticDto);
+            setValuesFromEntityToDto(coinGeckoMarketResponse, transaction, transactionDto);
+
+
+            transactionStatisticDtos.add(transactionDto);
         }
 
         return  transactionStatisticDtos;
+    }
+
+    private void setValuesFromEntityToDto(CoinGeckoMarketsItem coinGeckoMarketResponse, Transaction transaction, TransactionStatisticDto transactionDto) {
+        transactionDto.setId(transaction.getId());
+        transactionDto.setAssetType(transaction.getAssetType());
+        transactionDto.setBuyDate(transaction.getBuyDate());
+        transactionDto.setCurrencyInvested(transaction.getCurrencyInvested());
+        transactionDto.setAmountOfAsset(transaction.getAmountOfAsset());
+        transactionDto.setAssetBuyingPrice(transaction.getAssetBuyingPrice());
+        transactionDto.setCurrentValue(calculateCurrentValue(transactionDto.getAmountOfAsset(),
+                coinGeckoMarketResponse.getCurrentPrice()));
+        transactionDto.setPriceChange24h(coinGeckoMarketResponse.getPriceChange24H());
+        transactionDto.setProfitLoss(calculateProfitLoss(transactionDto.getCurrentValue(),
+                transactionDto.getCurrencyInvested()));
+        transactionDto.setCurrentPriceOfAsset(coinGeckoMarketResponse.getCurrentPrice());
+        transactionDto.setRoi(calculateRoi(transactionDto.getProfitLoss(),
+                    transactionDto.getCurrencyInvested()));
+        transactionDto.setAverageDailyRoi(calculateAverageRoi(transactionDto.getRoi(),
+                    transaction.getBuyDate()));
+
+
+
     }
 
     @Override
@@ -112,7 +106,7 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     private BigDecimal calculateCurrentValue(BigDecimal amount, BigDecimal currentPrice) {
-        return amount.multiply(currentPrice);
+        return amount.multiply(currentPrice).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     private BigDecimal calculateProfitLoss(BigDecimal currentValue, BigDecimal currencyInvested) {
@@ -120,12 +114,12 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     private BigDecimal calculateRoi(BigDecimal profitLoss, BigDecimal currencyInvested) {
-        return profitLoss.divide(currencyInvested, RoundingMode.HALF_UP);
+        return profitLoss.divide(currencyInvested );
     }
 
     private BigDecimal calculateAverageRoi(BigDecimal roi, LocalDate buyingDate) {
         return roi.divide(BigDecimal.valueOf(
-                ChronoUnit.DAYS.between(buyingDate, LocalDate.now())).add(BigDecimal.valueOf(1)), RoundingMode.HALF_UP);
+                ChronoUnit.DAYS.between(buyingDate, LocalDate.now())).add(BigDecimal.valueOf(1)));
     }
 
 }
